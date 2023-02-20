@@ -55,7 +55,7 @@ public class searchAPerson {
 						Select select_secrt2 = new Select(driver.findElement(By.name("ctl00$ContentPlaceHolder1$village")));
 						select_secrt2.selectByVisibleText(villageOption);
 						Thread.sleep(3000);
-						System.out.println("village: " + villageOption);
+						//System.out.println("village: " + villageOption);
 						driver.navigate().refresh();
 						Thread.sleep(2000);
 						WebElement surnameTxt = driver.findElement(By.name("ctl00$ContentPlaceHolder1$Textnamesearch"));
