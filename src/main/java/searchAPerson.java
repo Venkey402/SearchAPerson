@@ -16,12 +16,12 @@ public class searchAPerson {
 
 	@Test
 	public void test() throws InterruptedException, IOException {
-		String district = "VISAKHAPATNAMadfadsf";
+		String district = "VISAKHAPATNAM";
 		String surname = "boddana";
 		List<String> list_RC = new ArrayList<String>();
 		String userdir = System.getProperty("user.dir");
 		System.setProperty("webdriver.chrome.driver",
-				userdir + "/SearchAPerson/src/main/resources/chromedriver.exe");
+				userdir + "/src/main/resources/chromedriver.exe");
 		WebDriver driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get("https://ysrbima.ap.gov.in/new/SearchName.aspx");
