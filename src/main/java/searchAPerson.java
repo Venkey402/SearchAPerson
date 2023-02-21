@@ -18,12 +18,15 @@ public class searchAPerson {
 	public void test() throws InterruptedException, IOException {
 		String district = "VISAKHAPATNAM";
 		String surname = "boddana";
-		List<String> list_RC = new ArrayList<String>();
+
 		String userdir = System.getProperty("user.dir");
+		String rc_numstr = userdir + "\\src\\main\\resources\\rc_num.csv";
+		FileWriter rc_fw = new FileWriter(rc_numstr, true);
+		List<String> list_RC = new ArrayList<String>();
+
 		Logger logger = Logger.getLogger("Naukri");
 		logger.config("log4j.properties");
-		System.setProperty("webdriver.chrome.driver",
-				userdir + "/src/main/resources/chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", userdir + "/src/main/resources/chromedriver.exe");
 		logger.info("Set the user directory successfully.");
 		WebDriver driver = new ChromeDriver();
 		driver.manage().window().maximize();
@@ -33,7 +36,7 @@ public class searchAPerson {
 		Thread.sleep(3000);
 		Select select_district = new Select(driver.findElement(By.id("ContentPlaceHolder1_Distric")));
 		select_district.selectByVisibleText(district);
-		logger.info(district+"district selected successfully.");
+		logger.info(district + "district selected successfully.");
 		Thread.sleep(3000);
 		Select select_mandal2 = new Select(driver.findElement(By.name("ctl00$ContentPlaceHolder1$mandal")));
 
@@ -48,7 +51,7 @@ public class searchAPerson {
 			if (!mandalOption.startsWith("--Select")) {
 				Select select_mandal = new Select(driver.findElement(By.name("ctl00$ContentPlaceHolder1$mandal")));
 				select_mandal.selectByVisibleText(mandalOption);
-				logger.info(mandalOption+"mandal selected successfully.");
+				logger.info(mandalOption + "mandal selected successfully.");
 				Thread.sleep(3000);
 
 				Select select_secrt = new Select(driver.findElement(By.name("ctl00$ContentPlaceHolder1$village")));
@@ -64,14 +67,14 @@ public class searchAPerson {
 						Select select_secrt2 = new Select(
 								driver.findElement(By.name("ctl00$ContentPlaceHolder1$village")));
 						select_secrt2.selectByVisibleText(villageOption);
-						logger.info(villageOption+"village selected successfully.");
+						logger.info(villageOption + "village selected successfully.");
 						Thread.sleep(3000);
 						driver.navigate().refresh();
 						Thread.sleep(2000);
 						WebElement surnameTxt = driver.findElement(By.name("ctl00$ContentPlaceHolder1$Textnamesearch"));
 						surnameTxt.clear();
 						surnameTxt.sendKeys(surname);
-						logger.info(surname+"surname typed successfully.");
+						logger.info(surname + "surname typed successfully.");
 						JavascriptExecutor js = (JavascriptExecutor) driver;
 						js.executeScript(
 								"document.getElementById('ContentPlaceHolder1_LinkButton1').scrollIntoView(true);");
@@ -83,7 +86,11 @@ public class searchAPerson {
 								.findElements(By.xpath("//table[@id='ContentPlaceHolder1_gridview1']//tr/td[2]"));
 						logger.info("Got the list of webelements of RCs");
 						for (WebElement ele : details_rc) {
-							list_RC.add(ele.getText());
+							String rc_num = ele.getText();
+							list_RC.add(rc_num);
+							logger.info("RC Number added to the list successfully");
+							rc_fw.write(rc_num+","+"\r");
+							logger.info("RC Number written to the file successfully");
 						}
 						driver.navigate().refresh();
 						logger.info("Refreshed the page successfully");
@@ -91,14 +98,14 @@ public class searchAPerson {
 				}
 			}
 		}
+		rc_fw.close();
 		search_rc(list_RC, driver);
-
 	}
 
 	public void search_rc(List<String> list_RC, WebDriver driver) throws InterruptedException, IOException {
 		for (String rc_no : list_RC) {
 			String userdir = System.getProperty("user.dir");
-			String file = userdir+"\\src\\main\\resources\\search_output.csv";
+			String file = userdir + "\\src\\main\\resources\\search_output.csv";
 			driver.navigate().to("https://aepos.ap.gov.in/ePos/SRC_Trans_Int.jsp");
 			driver.findElement(By.id("rcno")).sendKeys(rc_no);
 			driver.findElement(By.xpath("//button[text()='Submit']")).click();
