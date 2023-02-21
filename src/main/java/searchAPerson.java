@@ -3,7 +3,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -20,15 +20,20 @@ public class searchAPerson {
 		String surname = "boddana";
 		List<String> list_RC = new ArrayList<String>();
 		String userdir = System.getProperty("user.dir");
+		Logger logger = Logger.getLogger("Naukri");
+		logger.config("log4j.properties");
 		System.setProperty("webdriver.chrome.driver",
 				userdir + "/src/main/resources/chromedriver.exe");
+		logger.info("Set the user directory successfully.");
 		WebDriver driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get("https://ysrbima.ap.gov.in/new/SearchName.aspx");
+		logger.info("Ysr Bhima site opened successfully");
 		driver.findElement(By.id("ContentPlaceHolder1_RadioButtonList1_2")).click();
 		Thread.sleep(3000);
 		Select select_district = new Select(driver.findElement(By.id("ContentPlaceHolder1_Distric")));
 		select_district.selectByVisibleText(district);
+		logger.info(district+"district selected successfully.");
 		Thread.sleep(3000);
 		Select select_mandal2 = new Select(driver.findElement(By.name("ctl00$ContentPlaceHolder1$mandal")));
 
@@ -43,6 +48,7 @@ public class searchAPerson {
 			if (!mandalOption.startsWith("--Select")) {
 				Select select_mandal = new Select(driver.findElement(By.name("ctl00$ContentPlaceHolder1$mandal")));
 				select_mandal.selectByVisibleText(mandalOption);
+				logger.info(mandalOption+"mandal selected successfully.");
 				Thread.sleep(3000);
 
 				Select select_secrt = new Select(driver.findElement(By.name("ctl00$ContentPlaceHolder1$village")));
@@ -58,25 +64,29 @@ public class searchAPerson {
 						Select select_secrt2 = new Select(
 								driver.findElement(By.name("ctl00$ContentPlaceHolder1$village")));
 						select_secrt2.selectByVisibleText(villageOption);
+						logger.info(villageOption+"village selected successfully.");
 						Thread.sleep(3000);
 						driver.navigate().refresh();
 						Thread.sleep(2000);
 						WebElement surnameTxt = driver.findElement(By.name("ctl00$ContentPlaceHolder1$Textnamesearch"));
 						surnameTxt.clear();
 						surnameTxt.sendKeys(surname);
+						logger.info(surname+"surname typed successfully.");
 						JavascriptExecutor js = (JavascriptExecutor) driver;
 						js.executeScript(
 								"document.getElementById('ContentPlaceHolder1_LinkButton1').scrollIntoView(true);");
 						js.executeScript("arguments[0].click();",
 								driver.findElement(By.id("ContentPlaceHolder1_LinkButton1")));
+						logger.info("clicked on search button successfully.");
 						Thread.sleep(3000);
 						List<WebElement> details_rc = driver
 								.findElements(By.xpath("//table[@id='ContentPlaceHolder1_gridview1']//tr/td[2]"));
-
+						logger.info("Got the list of webelements of RCs");
 						for (WebElement ele : details_rc) {
 							list_RC.add(ele.getText());
 						}
 						driver.navigate().refresh();
+						logger.info("Refreshed the page successfully");
 					}
 				}
 			}
