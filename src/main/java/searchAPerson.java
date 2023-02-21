@@ -31,6 +31,7 @@ public class searchAPerson {
 		WebDriver driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get("https://ysrbima.ap.gov.in/new/SearchName.aspx");
+		Thread.sleep(3000);
 		logger.info("Ysr Bhima site opened successfully");
 		driver.findElement(By.id("ContentPlaceHolder1_RadioButtonList1_2")).click();
 		Thread.sleep(3000);
