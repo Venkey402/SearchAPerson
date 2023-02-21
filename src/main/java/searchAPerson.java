@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,13 +15,13 @@ import org.testng.annotations.Test;
 public class searchAPerson {
 
 	@Test
-	public void test() throws InterruptedException {
-		String district = "SRIKAKULAM";
+	public void test() throws InterruptedException, IOException {
+		String district = "VISAKHAPATNAMadfadsf";
 		String surname = "boddana";
 		List<String> list_RC = new ArrayList<String>();
-
+		String userdir = System.getProperty("user.dir");
 		System.setProperty("webdriver.chrome.driver",
-				"D:\\Venkat_Personal\\Work\\Automation\\Sekhar_Dev\\Sekhar_Dev\\src\\main\\resources\\drivers\\windows-chrome\\chromedriver.exe");
+				userdir + "/SearchAPerson/src/main/resources/chromedriver.exe");
 		WebDriver driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get("https://ysrbima.ap.gov.in/new/SearchName.aspx");
@@ -52,10 +55,10 @@ public class searchAPerson {
 
 				for (String villageOption : villageInMandals) {
 					if (!villageOption.startsWith("--Select")) {
-						Select select_secrt2 = new Select(driver.findElement(By.name("ctl00$ContentPlaceHolder1$village")));
+						Select select_secrt2 = new Select(
+								driver.findElement(By.name("ctl00$ContentPlaceHolder1$village")));
 						select_secrt2.selectByVisibleText(villageOption);
 						Thread.sleep(3000);
-						//System.out.println("village: " + villageOption);
 						driver.navigate().refresh();
 						Thread.sleep(2000);
 						WebElement surnameTxt = driver.findElement(By.name("ctl00$ContentPlaceHolder1$Textnamesearch"));
@@ -71,9 +74,7 @@ public class searchAPerson {
 								.findElements(By.xpath("//table[@id='ContentPlaceHolder1_gridview1']//tr/td[2]"));
 
 						for (WebElement ele : details_rc) {
-
 							list_RC.add(ele.getText());
-							// System.out.println(ele.getText());
 						}
 						driver.navigate().refresh();
 					}
@@ -84,13 +85,14 @@ public class searchAPerson {
 
 	}
 
-	public void search_rc(List<String> list_RC, WebDriver driver) throws InterruptedException {
+	public void search_rc(List<String> list_RC, WebDriver driver) throws InterruptedException, IOException {
 		for (String rc_no : list_RC) {
-
+			String userdir = System.getProperty("user.dir");
+			String file = userdir+"\\src\\main\\resources\\search_output.csv";
 			driver.navigate().to("https://aepos.ap.gov.in/ePos/SRC_Trans_Int.jsp");
 			driver.findElement(By.id("rcno")).sendKeys(rc_no);
 			driver.findElement(By.xpath("//button[text()='Submit']")).click();
-			// System.out.println("clicked on the submit button in RC");
+			FileWriter fw = new FileWriter(file, true);
 			Thread.sleep(3000);
 			List<WebElement> family_details = driver.findElements(By.xpath("//*[@id='detailsED']//table[1]//tr"));
 			// System.out.println("No.of Family members"+(family_details.size()-3));
@@ -101,11 +103,15 @@ public class searchAPerson {
 				WebElement relation = driver
 						.findElement(By.xpath("//*[@id='detailsED']//table[1]//tr[" + i + "]/td[5]"));
 
-				if ((relation.getText().contains("DAUGHTER")) && ((Integer.parseInt(age.getText())) >= 16)) {
+				if (relation.getText().contains("DAUGHTER")) {
+					// the true will append the new data
+					fw.write(rc_no + "," + member.getText() + "," + age.getText() + "\r");// appends the string to the
+																							// file
 					System.out.println("RC No:" + rc_no + ", " + "Member:" + member.getText() + ", " + "Age:"
 							+ age.getText() + ", " + "Village:" + "" + ", " + "Mandal:" + "" + ", " + "District:" + "");
 				}
 			}
+			fw.close();
 		}
 	}
 }
